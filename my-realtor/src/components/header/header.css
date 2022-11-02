@@ -1,0 +1,33 @@
+.logo img {
+  width: 10rem;
+  padding-bottom: 0.6rem;
+  cursor: pointer;
+}
+.nav {
+  display: flex;
+  gap: 2rem;
+}
+.nav-list {
+  padding-bottom: 0.6rem;
+}
+.nav-list.active {
+  border-bottom: 2px solid var(---color-error);
+}
+.nav-list > a {
+  color: rgb(157, 151, 151);
+  font-weight: 900;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.nav-list.active > a {
+  color: black;
+}
+.header {
+  box-shadow: 0px 1px 6px 0px rgba(138, 132, 132, 0.75);
+}
+.header > .container {
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -1,0 +1,111 @@
+.container__detail {
+  background-color: #f1faee;
+  padding-bottom: 2rem;
+}
+.realtor__about {
+  margin-top: 2rem;
+  display: flex;
+  box-shadow: 1px 1px 3px rgb(78, 75, 75);
+  flex-direction: row;
+  background-color: white;
+  gap: 2rem;
+  padding: 2rem;
+}
+.realtor__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.realtor__title {
+  font-size: 1.3rem;
+  color: rgb(37, 97, 201);
+  font-weight: 600;
+}
+.realtor__location {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.location-icon {
+  font-size: 0.9rem;
+  color: green;
+}
+.realtor__info {
+  display: flex;
+  gap: 2rem;
+}
+.btn-realtor {
+  padding: 0.2rem 0rem;
+  border-radius: 0.4rem;
+  color: white;
+  width: 12rem;
+  text-align: center;
+  font-weight: 700;
+}
+.realtor__for {
+  background-color: rgb(177, 27, 27);
+}
+.realtor__discount {
+  background-color: rgb(23, 110, 23);
+}
+.realtor__desc {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+.realtor__desc > .desc {
+  font-weight: 600;
+}
+.realtor__icons {
+  display: flex;
+  gap: 2rem;
+}
+.btn__message {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: rgb(57, 114, 206);
+  border: none;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 400ms ease;
+}
+.btn__message:hover {
+  background-color: rgb(36, 74, 146);
+}
+.text__area {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  font-size: 1.4rem;
+}
+.text-hidden {
+  animation-name: slowy;
+  animation-duration: 2s;
+}
+/* google map */
+.mapouter {
+  position: relative;
+  text-align: right;
+  height: 406px;
+  width: 100%;
+}
+.gmap_canvas {
+  overflow: hidden;
+  background: none !important;
+  height: 406px;
+  width: 100%;
+}
+@keyframes slowy {
+  from {
+    transform: translateY(-20%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .realtor__about {
+    flex-direction: column;
+  }
+}

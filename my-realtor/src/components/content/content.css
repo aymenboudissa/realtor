@@ -1,0 +1,11 @@
+.container__offers {
+  width: 90%;
+  margin: 0 auto;
+}
+.offers__title {
+  width: 100%;
+  text-align: center;
+}
+.offers__title h1 {
+  font-size: 1.8rem;
+}
