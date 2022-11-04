@@ -1,0 +1,50 @@
+.container__profile {
+  background-color: var(--color-bg);
+  /* text-align: center; */
+  height: 100%;
+}
+#container-profile {
+  height: 90vh;
+}
+.container__profile .profile__about {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 40%;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+.profile__about .title {
+  font-weight: 600;
+  font-size: 1.8rem;
+  text-align: center;
+}
+.input__profile {
+  width: 100%;
+  padding: 0.7rem 0.6rem;
+  font-size: 1.2rem;
+
+  color: rgb(108, 104, 104);
+}
+.profile__change {
+  display: flex;
+  justify-content: space-between;
+}
+.icon__home {
+  font-size: 2rem;
+  padding: 0.3rem;
+  background-color: rgb(240, 159, 159);
+  border-radius: 50%;
+  border: 1.5px solid white;
+}
+#btn__insert {
+  padding: 1.6rem;
+  display: flex;
+  gap: 1rem;
+}
+.input__profile:disabled {
+  background-color: white;
+}
+.input__profile.bg-red {
+  background-color: rgb(235, 180, 180);
+}

@@ -19,7 +19,8 @@
   height: 25rem;
 }
 
-.form input:focus {
+input:focus,
+.text__area:focus {
   outline: none;
   border: 2.5px solid rgb(59, 99, 193);
 }
@@ -80,6 +81,7 @@ input {
   background-color: rgb(0, 102, 255);
   transition: all 400ms ease;
   height: 2.5rem;
+  border-radius: 0.5rem;
 }
 .icon__google {
   font-size: 1.5rem;

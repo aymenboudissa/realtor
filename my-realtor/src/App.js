@@ -6,8 +6,12 @@ import Header from "./components/header/Header";
 import SignIn from "./screens/Sign-in/SignIn";
 import Detail from "./screens/Detail/Detail";
 import SignUp from "./screens/Sign-in/SignUp";
+import Profile from "./screens/profie/Profile";
+import PrivateRoute from "./components/PrivateRoute";
 import ForgotPassword from "./screens/Sign-in/ForgotPassword";
+import CreateList from "./screens/Create-listing/CreateList";
 import { ToastContainer } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 const App = () => {
   return (
@@ -21,6 +25,10 @@ const App = () => {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/category/:cat/:id" element={<Detail />} />
+        <Route path="/profile" element={<PrivateRoute />}>
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+        <Route path="/create-listing" element={<CreateList />} />
       </Routes>
       <ToastContainer
         position="bottom-center"

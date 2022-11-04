@@ -73,11 +73,13 @@
   background-color: rgb(36, 74, 146);
 }
 .text__area {
+  border: 2.5px solid #bfbdbd;
   width: 100%;
   margin-top: 1rem;
   padding: 1rem;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 }
+
 .text-hidden {
   animation-name: slowy;
   animation-duration: 2s;

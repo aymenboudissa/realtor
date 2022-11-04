@@ -4,13 +4,44 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import "./index.css";
 import { Link } from "react-router-dom";
+import OAuth from "../../components/OAuth";
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
+import { toast } from "react-toastify";
 const SignIn = () => {
-  const toggle = () => {
-    setRegister((prev) => !prev);
-  };
+  const [formData, setFormData] = React.useState({
+    email: "",
+    password: "",
+  });
+  const { email, password } = formData;
   const [show, setShow] = React.useState(false);
   const [register, setRegister] = React.useState(false);
   const [forgotPassword, setforgotPassword] = React.useState(false);
+  const navigate = useNavigate();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      if (userCredential.user) {
+        navigate("/");
+      }
+    } catch (error) {}
+  };
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
   return (
     <div className="container__categories sign__container">
       <div className="offers__title">
@@ -18,9 +49,15 @@ const SignIn = () => {
       </div>
       <div className="connect">
         <img src={login} alt="" className="image" />
-        <div className="form">
+        <form className="form" onSubmit={onSubmit}>
           <div className="">
-            <input type="email" placeholder="Email adresse" name="" id="" />
+            <input
+              type="email"
+              placeholder="Email adresse"
+              name=""
+              id="email"
+              onChange={(e) => onChange(e)}
+            />
           </div>
 
           <div className="passwordInput">
@@ -29,7 +66,8 @@ const SignIn = () => {
               className=""
               placeholder="Password"
               name=""
-              id=""
+              id="password"
+              onChange={(e) => onChange(e)}
             />
             <div
               className="eyes__icon"
@@ -60,16 +98,16 @@ const SignIn = () => {
               </button>
             </Link>
           </div>
-          <button className="btn__sign">Sign Up</button>
+          <button type="submit" className="btn__sign">
+            Sign In
+          </button>
           <div className="outline__display">
             <div className="outline"></div>
             <div className="text_or">OR</div>
             <div className="outline"></div>
           </div>
-          <button className="btn__sign" id="google">
-            <FcGoogle className="icon__google" /> CONTINUE WITH GOOGLE
-          </button>
-        </div>
+          <OAuth />
+        </form>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import login from "../../assets/images/login.jpg";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import { FcGoogle } from "react-icons/fc";
+
 import "./index.css";
 import { Link, useNavigate } from "react-router-dom";
 import { serverTimestamp, setDoc, doc } from "firebase/firestore";
@@ -11,8 +11,8 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
-
 import { db } from "../../firebase";
+import OAuth from "../../components/OAuth";
 
 const SignIn = () => {
   const [formData, setFormData] = React.useState({
@@ -126,9 +126,7 @@ const SignIn = () => {
             <div className="text_or">OR</div>
             <div className="outline"></div>
           </div>
-          <button className="btn__sign" id="google">
-            <FcGoogle className="icon__google" /> CONTINUE WITH GOOGLE
-          </button>
+          <OAuth />
         </div>
       </div>
     </div>

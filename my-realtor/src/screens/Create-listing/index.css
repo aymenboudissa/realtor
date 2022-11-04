@@ -1,0 +1,50 @@
+.lists__display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.container__profile #w-sm {
+  width: 30%;
+}
+.list__title {
+  text-align: left;
+}
+.btn__list {
+  width: 12rem;
+  padding: 0.5rem;
+  box-shadow: 1px 1px 2px #9a9696;
+  height: 2.7rem;
+  border: none;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 0.4rem;
+  font-weight: 600;
+}
+.btn__list:hover {
+  box-shadow: 1px 1px 6px #9f9c9c;
+}
+.btn__list.active {
+  background-color: #757575;
+  color: white;
+}
+.list__beds-baths {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+.inputNumber {
+  width: 5rem;
+}
+.inputPrice {
+  width: 10rem;
+}
+.text-muet {
+  color: #646262;
+  font-size: 0.8rem;
+}
+.inputFile {
+  background-color: white;
+  cursor: pointer;
+  color: #757575;
+  font-size: 1rem;
+}
