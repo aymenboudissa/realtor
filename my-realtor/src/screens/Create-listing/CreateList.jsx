@@ -1,16 +1,28 @@
 import React from "react";
 import "./index.css";
 import Select from "../../components/Select";
+import Spinner from "../../components/spinner/Spinner";
+import { toast } from "react-toastify";
+import { v4 } from "uuid";
+// import { async } from "@firebase/util";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { getAuth } from "firebase/auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useNavigate } from "react-router-dom";
+import { async } from "@firebase/util";
 const CreateList = () => {
-  const [rent, setRent] = React.useState(false);
-  const [parking, setParking] = React.useState(false);
-  const [Furnished, setFurnished] = React.useState(false);
-  const [offer, setOffer] = React.useState(false);
-  const [beds, setBeds] = React.useState(1);
-  const [baths, setBaths] = React.useState(1);
-  const [Price, setPrice] = React.useState(50);
+  const auth = getAuth();
+  const navigate = useNavigate();
+  const [geolocationEnabled, setGeolocationEnabled] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [formData, setformData] = React.useState({
-    type: rent,
+    type: "rent",
     name: "",
     beds: 1,
     baths: 1,
@@ -19,53 +31,165 @@ const CreateList = () => {
     adresse: "",
     description: "",
     offer: false,
-    price: 50,
-    images: {
-      image1: "",
-      image2: "",
-      image3: "",
-      image4: "",
-      image5: "",
-      image6: "",
-    },
+    price: 0,
+    discountedPrice: 0,
+    images: {},
   });
 
   const onChange = (e) => {
-    setformData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
+    let boolean = null;
+    if (e.target.value === "true") {
+      boolean = true;
+    }
+    if (e.target.value === "false") {
+      boolean = false;
+    }
+    if (e.target.files) {
+      setformData((prevState) => ({
+        ...prevState,
+        images: e.target.files,
+      }));
+    }
+    if (!e.target.files) {
+      setformData((prevState) => ({
+        ...prevState,
+        [e.target.id]: boolean ?? e.target.value,
+      }));
+    }
   };
-  const onSubmit = (e) => {
+  const StoreImage = (image) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage();
+      const filename = `${auth.currentUser.uid}-${image.name}-${v4()}`;
+      const storageRef = ref(storage, filename);
+      const uploadTask = uploadBytesResumable(storageRef, image);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          // Handle unsuccessful uploads
+          reject(error);
+        },
+        () => {
+          // Handle successful uploads on complete
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setformData((prevState) => ({
-      ...prevState,
-      type: rent,
-      beds: beds,
-      baths: baths,
-      parking: parking,
-      furnished: Furnished,
-      offer: offer,
-      price: Price,
-    }));
-    console.log(formData);
+    setLoading(true);
+    if (+discountedPrice >= +price) {
+      setLoading(false);
+      toast.error("Discounted price needs to be less than regular price");
+      return;
+    }
+    if (images.length > 6) {
+      setLoading(false);
+      toast.error("maximum 6 images are allowed");
+      return;
+    }
+    // let gealocation = {};
+    // let location;
+    // if (!geolocationEnabled) {
+    //   const response = await fetch(
+    //     `https://maps.googleapis.com/maps/api/geocode/json?address=${adresse}&key=AIzaSyCuH6TEF_juse-Y-DcGrP_Y43IAOb7jFns`
+    //   );
+    //   const data = await response.json();
+    //   console.log(data);
+    // }]
+    const imgUrls = await Promise.all(
+      [...images].map((image) => StoreImage(image))
+    ).catch((error) => {
+      toast.error("Image not uploaded");
+      return;
+    });
+    setLoading(false);
+
+    const formDataCopy = {
+      ...formData,
+      imgUrls,
+      timestamp: serverTimestamp(),
+      useRef: auth.currentUser.uid,
+    };
+    delete formDataCopy.images;
+    !formDataCopy.offer && delete formDataCopy.discountedPrice;
+    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    setLoading(false);
+    toast.success("Listing created");
+    navigate(`/category/${formDataCopy.type}/${docRef}`);
   };
+  if (loading) {
+    return <Spinner />;
+  }
+  const {
+    type,
+    beds,
+    baths,
+    parking,
+    furnished,
+    offer,
+    price,
+    discountedPrice,
+    images,
+
+    adresse,
+  } = formData;
   return (
     <section className="container__profile">
       <form onSubmit={onSubmit} className="profile__about" id="w-sm">
         <h2 className="title">Create a Listing</h2>
-        <Select
-          title={"Sell / Rent"}
-          button1={"SELL"}
-          button2={"RENT"}
-          setType={setRent}
-          type={rent}
-        />
+        <div className="list__buttons">
+          <h3 className="list__title">Sell / Rent</h3>
+          <div className="lists__display">
+            <div className="label">
+              <button
+                type={"button"}
+                id="type"
+                value={"sell"}
+                className={type === "sell" ? "btn__list active" : "btn__list "}
+                onClick={onChange}
+              >
+                SELL
+              </button>
+            </div>
+            <button
+              type={"button"}
+              id="type"
+              value={"rent"}
+              className={type === "rent" ? "btn__list active" : "btn__list "}
+              onClick={onChange}
+            >
+              RENT
+            </button>
+          </div>
+        </div>
         <div className="input__name">
           <h3 className="list__title">Name</h3>
           <input
             type="text"
             name=""
+            min={"12"}
+            max={"100"}
+            required
             placeholder="Name"
             id="name"
             onChange={(e) => onChange(e)}
@@ -80,9 +204,9 @@ const CreateList = () => {
               name=""
               id="beds"
               value={beds}
-              onChange={(event) =>
-                setBeds(event.target.value.replace(/\D/, ""))
-              }
+              min="0"
+              max={"100"}
+              onChange={(event) => onChange(event)}
             />
           </div>
           <div className="list-baths">
@@ -93,26 +217,64 @@ const CreateList = () => {
               name=""
               id="baths"
               value={baths}
-              onChange={(event) =>
-                setBaths(event.target.value.replace(/\D/, ""))
-              }
+              onChange={(event) => onChange(event)}
             />
           </div>
         </div>
-        <Select
-          title={"Parking spot"}
-          button1={"YES"}
-          button2={"NO"}
-          setType={setParking}
-          type={parking}
-        />
-        <Select
-          title={"Furnished"}
-          button1={"YES"}
-          button2={"NO"}
-          setType={setFurnished}
-          type={Furnished}
-        />
+        <div className="list__buttons">
+          <h3 className="list__title">Parking spot</h3>
+          <div className="lists__display">
+            <div className="label">
+              <button
+                type={"button"}
+                id="parking"
+                value={true}
+                className={
+                  parking === true ? "btn__list active" : "btn__list  "
+                }
+                onClick={onChange}
+              >
+                Yes
+              </button>
+            </div>
+            <button
+              type={"button"}
+              id="parking"
+              value={false}
+              className={parking === false ? "btn__list active" : " btn__list "}
+              onClick={onChange}
+            >
+              No
+            </button>
+            {parking}
+          </div>
+        </div>
+        <div className="list__buttons">
+          <h3 className="list__title">Furnished</h3>
+          <div className="lists__display">
+            <div className="label">
+              <button
+                type={"button"}
+                id="furnished"
+                value={true}
+                className={furnished ? "btn__list active" : "btn__list "}
+                onClick={(e) => onChange(e)}
+              >
+                Yes
+              </button>
+            </div>
+            <button
+              type={"button"}
+              id="furnished"
+              value={false}
+              className={!furnished ? "btn__list active" : "btn__list "}
+              onClick={(e) => onChange(e)}
+            >
+              No
+            </button>
+          </div>
+        </div>
+
         <div className="adress">
           <h3 className="list__title">Address</h3>
           <textarea
@@ -124,6 +286,7 @@ const CreateList = () => {
             onChange={(e) => onChange(e)}
           ></textarea>
         </div>
+
         <div className="adress">
           <h3 className="list__title">Description</h3>
           <textarea
@@ -135,6 +298,32 @@ const CreateList = () => {
             onChange={(e) => onChange(e)}
           ></textarea>
         </div>
+        <div className="list__buttons">
+          <h3 className="list__title">Offer</h3>
+          <div className="lists__display">
+            <div className="label">
+              <button
+                type={"button"}
+                id="offer"
+                value={true}
+                className={offer ? "btn__list active" : "btn__list "}
+                onClick={(e) => onChange(e)}
+              >
+                Yes
+              </button>
+            </div>
+            <button
+              type={"button"}
+              id="offer"
+              value={false}
+              className={!offer ? "btn__list active" : "btn__list "}
+              onClick={(e) => onChange(e)}
+            >
+              No
+            </button>
+          </div>
+        </div>
+
         <div className="price__list">
           <h3 className="list__title">Regular Price</h3>
           <div className="list__beds-baths">
@@ -143,31 +332,42 @@ const CreateList = () => {
               className="inputPrice"
               name=""
               id="price"
-              value={Price}
-              onChange={(event) =>
-                setPrice(event.target.value.replace(/\D/, ""))
-              }
+              value={price}
+              min={"50"}
+              onChange={(event) => onChange(event)}
             />
             <p>$ / Month</p>
           </div>
         </div>
-        <Select
-          title={"Offer"}
-          button1={"YES"}
-          button2={"NO"}
-          setType={setOffer}
-          type={offer}
-        />
+        {offer && (
+          <div className="price__list">
+            <h3 className="list__title">Regular Price</h3>
+            <div className="list__beds-baths">
+              <input
+                type="number"
+                className="inputPrice"
+                name=""
+                min={"50"}
+                id="discountedPrice"
+                value={discountedPrice}
+                onChange={(event) => onChange(event)}
+              />
+            </div>
+          </div>
+        )}
         <div className="input__name">
           <h3 className="list__title">Images</h3>
           <p className="text-muet">
             The first image will be the cover (max 6).
           </p>
           <input
+            accept=".jpg,.png,.jpeg"
+            multiple
+            required
             type={"file"}
             name=""
             className="inputFile"
-            id="name"
+            id="images"
             onChange={(e) => onChange(e)}
           />
         </div>

@@ -4,7 +4,7 @@
   height: 100%;
 }
 #container-profile {
-  height: 90vh;
+  /* height: 90vh; */
 }
 .container__profile .profile__about {
   display: flex;

@@ -2,9 +2,36 @@ import React from "react";
 import Slider from "../../components/slider/Slider";
 import { HiLocationMarker } from "react-icons/hi";
 import { FaBed, FaBath, FaParking, FaChair } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 import "./detai.css";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../firebase";
 const Detail = () => {
+  const params = useParams();
+  let id = params.id;
+  const [list, setList] = React.useState([]);
+
+  const [loading, setLoading] = React.useState(true);
   const [contact, setContact] = React.useState(false);
+  React.useEffect(() => {
+    async function fetchListing() {
+      const listingRef = collection(db, "listings");
+      const q = query(listingRef, where("id", "==", id));
+      const querySnap = await getDocs(q);
+      let listings = [];
+      querySnap.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      setList(listings);
+    }
+    fetchListing();
+
+    setLoading(false);
+  }, []);
+  console.log(list);
   return (
     <div className="container__detail">
       <Slider />

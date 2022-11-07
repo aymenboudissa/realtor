@@ -5,28 +5,39 @@ import image2 from "../assets/images/home-3.jpg";
 import image3 from "../assets/images/home-4.jpg";
 import { HiLocationMarker } from "react-icons/hi";
 import { Link } from "react-router-dom";
-const Home = () => {
+import Moment from "react-moment";
+const Home = ({ items }) => {
   return (
-    <Link to={"/category/sale/" + 1}>
-      <article className="home">
+    <Link to={`/category/${items.data.type}/${items.id}`}>
+      <div className="home">
         <div className="image">
           {" "}
-          <img className="image__top" src={image} alt="" />
+          <img className="image__top" src={items.data.imgUrls[0]} alt="" />
         </div>
-        <div className="home_date">3 DAYS AGO</div>
+        <div className="home_date">
+          <Moment fromNow>{items.data.timestamp?.toDate()}</Moment>
+        </div>
         <div className="home__about">
           <div className="home__location">
-            <HiLocationMarker className="realtor__location" /> 15A Kulai,Port
-            Road stMorris
+            <HiLocationMarker className="realtor__location" />{" "}
+            {items.data.adresse}
           </div>
-          <div className="home__title">Family Home in a Central !</div>
-          <div className="home__price">$500</div>
+          <div className="home__title"> {items.data.name}</div>
+          <div className="home__price">${items.data.price}</div>
           <div className="home__components">
-            <span className="home__bads">2 Beds</span>{" "}
-            <span className="home__baths">2 Baths</span>
+            <span className="home__bads">
+              {items.data.beds > 1
+                ? `${items.data.beds} Beds`
+                : `${items.data.beds} Bed`}
+            </span>{" "}
+            <span className="home__baths">
+              {items.data.baths > 1
+                ? `${items.data.baths} Baths`
+                : `${items.data.baths} Bath`}
+            </span>
           </div>
         </div>
-      </article>
+      </div>
     </Link>
   );
 };
