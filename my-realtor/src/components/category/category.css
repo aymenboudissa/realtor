@@ -93,6 +93,25 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+.home {
+  position: relative;
+}
+.home .icon__delete {
+  position: absolute;
+  bottom: 0.7rem;
+  right: 1rem;
+  color: red;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.home .icon__edite {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 3rem;
+  font-size: 1.4rem;
+  color: rgb(90, 86, 86);
+  cursor: pointer;
+}
 @media screen and (max-width: 768px) {
   .homes {
     grid-template-columns: repeat(2, 1fr);

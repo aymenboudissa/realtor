@@ -140,7 +140,7 @@ const Profile = () => {
           <h2 className="title">My listing</h2>
           <div className="homes">
             {Listings.map((listing) => (
-              <Home items={listing} />
+              <Home items={listing} lists={Listings} setLists={setListings} />
             ))}
           </div>
           ;

@@ -4,16 +4,37 @@ import image1 from "../assets/images/home-2.jpg";
 import image2 from "../assets/images/home-3.jpg";
 import image3 from "../assets/images/home-4.jpg";
 import { HiLocationMarker } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { FaTrashAlt } from "react-icons/fa";
+import { AiFillEdit } from "react-icons/ai";
+import { Link, useNavigate } from "react-router-dom";
+import { deleteDoc, doc } from "firebase/firestore";
 import Moment from "react-moment";
-const Home = ({ items }) => {
+import { db } from "../firebase";
+import { toast } from "react-toastify";
+
+const Home = ({ items, onEdit, onDelete, lists, setLists }) => {
+  const navigate = useNavigate();
+  const id = items.id;
+  const Delete = async () => {
+    if (window.confirm("Are you shure your wante to delete")) {
+      await deleteDoc(doc(db, "listings", id));
+      const updateList = lists.filter((listing) => listing.id !== id);
+      setLists(updateList);
+      toast.success("Succesfully deleted the listing");
+    }
+  };
+  const Edite = () => {
+    navigate(`/edite-listing/${id}`);
+  };
   return (
-    <Link to={`/category/${items.data.type}/${items.id}`}>
+    <>
       <div className="home">
-        <div className="image">
-          {" "}
-          <img className="image__top" src={items.data.imgUrls[0]} alt="" />
-        </div>
+        <Link to={`/category/${items.data.type}/${id}`}>
+          <div className="image">
+            {" "}
+            <img className="image__top" src={items.data.imgUrls[0]} alt="" />
+          </div>
+        </Link>
         <div className="home_date">
           <Moment fromNow>{items.data.timestamp?.toDate()}</Moment>
         </div>
@@ -37,8 +58,10 @@ const Home = ({ items }) => {
             </span>
           </div>
         </div>
+        {onDelete && <FaTrashAlt onClick={Delete} className="icon__delete" />}
+        {onEdit && <AiFillEdit onClick={Edite} className="icon__edite" />}
       </div>
-    </Link>
+    </>
   );
 };
 
