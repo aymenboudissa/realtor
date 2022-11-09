@@ -135,7 +135,7 @@ const CreateList = () => {
     const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
     toast.success("Listing created");
-    navigate(`/category/${formDataCopy.type}/${docRef}`);
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   };
   if (loading) {
     return <Spinner />;

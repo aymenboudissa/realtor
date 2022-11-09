@@ -2,6 +2,13 @@
   width: 90%;
   margin: 0 auto;
 }
+#offers {
+  height: 100vh;
+  overflow: scroll;
+}
+#container__offers {
+  height: 100%;
+}
 .offers__title {
   width: 100%;
   text-align: center;

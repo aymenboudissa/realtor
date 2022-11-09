@@ -164,8 +164,9 @@ const CreateList = () => {
     await updateDoc(docRef, formDataCopy);
     setLoading(false);
     toast.success("Listing Edited");
-    navigate(`/category/${formDataCopy.type}/${docRef}`);
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   };
+
   if (loading) {
     return <Spinner />;
   }

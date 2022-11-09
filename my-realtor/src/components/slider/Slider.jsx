@@ -1,6 +1,6 @@
 import React from "react";
 import "./slider.css";
-
+import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css/navigation";
 
@@ -15,14 +15,16 @@ const slider = ({ images, list }) => {
         return (
           <>
             <SwiperSlide>
-              <img
-                src={image.data.imgUrls[0]}
-                className="image__slider"
-                alt=""
-              />
-              <div className="home__title">images.name{image.data.name}</div>
+              <Link to={`/category/${image.data.type}/${image.id}`}>
+                <img
+                  src={image.data.imgUrls[0]}
+                  className="image__slider"
+                  alt=""
+                />
+                <div className="home__title">{image.data.name}</div>
 
-              <div className="homer__price">${image.data.price} / month</div>
+                <div className="homer__price">${image.data.price} / month</div>
+              </Link>
             </SwiperSlide>
           </>
         );

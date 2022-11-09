@@ -72,7 +72,7 @@ const Categories = () => {
               <Category
                 key={2}
                 title={"Places for sale"}
-                link={"/category/sale"}
+                link={"/category/sell"}
                 values={sales}
               />
               <Category

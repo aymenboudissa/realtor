@@ -97,6 +97,13 @@
   height: 406px;
   width: 100%;
 }
+#btn__send {
+  margin-top: 2rem;
+}
+#send__area {
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
 @keyframes slowy {
   from {
     transform: translateY(-20%);

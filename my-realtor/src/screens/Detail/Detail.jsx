@@ -1,26 +1,22 @@
-import React from "react";
+import React, { useRef } from "react";
 import Slider from "../../components/slider/Slider";
 import { HiLocationMarker } from "react-icons/hi";
 import { FaBed, FaBath, FaParking, FaChair } from "react-icons/fa";
 import { useParams } from "react-router-dom";
+import { getAuth } from "firebase/auth";
 import "./detai.css";
 import Spinner from "../../components/spinner/Spinner";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import Contact from "../../components/Contact";
 const Detail = () => {
   const params = useParams();
   let id = params.id;
   const [list, setList] = React.useState(null);
-
+  const auth = getAuth();
   const [loading, setLoading] = React.useState(true);
   const [contact, setContact] = React.useState(false);
+
   React.useEffect(() => {
     setLoading(true);
     async function fetchListing() {
@@ -83,27 +79,16 @@ const Detail = () => {
                   </span>
                 )}
               </div>
-              {contact ? (
-                <div className="text-hidden">
-                  <p>
-                    Contact Sahand Ghavidel for the family home in a central!
-                  </p>
-                  <textarea
-                    className="text__area"
-                    name=""
-                    id=""
-                    placeholder="Message"
-                  ></textarea>
-                </div>
-              ) : (
-                ""
+              {contact ? <Contact id={list.useRef} product={list.name} /> : ""}
+
+              {!contact && (
+                <button
+                  onClick={() => setContact((prev) => !prev)}
+                  className="btn__message"
+                >
+                  CONTACT LANDLORD
+                </button>
               )}
-              <button
-                onClick={() => setContact((prev) => !prev)}
-                className="btn__message"
-              >
-                CONTACT LANDLORD
-              </button>
             </div>
             <div className="mapouter">
               <div className="gmap_canvas">
