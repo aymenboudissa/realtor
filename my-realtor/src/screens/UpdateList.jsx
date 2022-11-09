@@ -1,7 +1,7 @@
 import React from "react";
-import "./index.css";
-import Select from "../../components/Select";
-import Spinner from "../../components/spinner/Spinner";
+import "./Create-listing/index.css";
+
+import Spinner from "../components/spinner/Spinner";
 import { toast } from "react-toastify";
 import { v4 } from "uuid";
 // import { async } from "@firebase/util";
@@ -12,15 +12,23 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useNavigate } from "react-router-dom";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { useNavigate, useParams } from "react-router-dom";
 import { async } from "@firebase/util";
 const CreateList = () => {
   const auth = getAuth();
   const navigate = useNavigate();
-  const [geolocationEnabled, setGeolocationEnabled] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [listing, setListing] = React.useState(null);
+  const params = useParams();
   const [formData, setformData] = React.useState({
     type: "rent",
     name: "",
@@ -35,7 +43,27 @@ const CreateList = () => {
     discountedPrice: 0,
     images: {},
   });
-
+  React.useEffect(() => {
+    async function fetchListing() {
+      const docRef = doc(db, "listings", params.id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setListing(docSnap.data());
+        setformData({ ...docSnap.data() });
+        setLoading(false);
+      } else {
+        navigate("/");
+        toast.error("Listing does not existe");
+      }
+    }
+    fetchListing();
+  }, [params.id]);
+  React.useEffect(() => {
+    if (listing && listing.useRef !== auth.currentUser.uid) {
+      toast.error("You can't edit this listing");
+      navigate("/");
+    }
+  }, [auth.currentUser.uid]);
   const onChange = (e) => {
     let boolean = null;
     if (e.target.value === "true") {
@@ -132,9 +160,10 @@ const CreateList = () => {
     };
     delete formDataCopy.images;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
-    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    const docRef = doc(db, "listings", params.id);
+    await updateDoc(docRef, formDataCopy);
     setLoading(false);
-    toast.success("Listing created");
+    toast.success("Listing Edited");
     navigate(`/category/${formDataCopy.type}/${docRef}`);
   };
   if (loading) {
@@ -150,7 +179,7 @@ const CreateList = () => {
     price,
     discountedPrice,
     images,
-
+    description,
     adresse,
   } = formData;
   return (
@@ -284,19 +313,23 @@ const CreateList = () => {
             cols="30"
             className="text__area"
             onChange={(e) => onChange(e)}
-          ></textarea>
+          >
+            {adresse}
+          </textarea>
         </div>
 
         <div className="adress">
           <h3 className="list__title">Description</h3>
           <textarea
-            className="text__area "
+            className="text__area"
             name=""
             id="description"
             placeholder="Description"
             cols="30"
             onChange={(e) => onChange(e)}
-          ></textarea>
+          >
+            {description}
+          </textarea>
         </div>
         <div className="list__buttons">
           <h3 className="list__title">Offer</h3>
@@ -372,7 +405,7 @@ const CreateList = () => {
           />
         </div>
         <button type="submit" className="btn__sign">
-          CREATE LISTING
+          Edite LISTING
         </button>
       </form>
     </section>

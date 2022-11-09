@@ -82,6 +82,7 @@ const Profile = () => {
     }
     fetchUserListings();
   }, [auth.currentUser.uid]);
+  console.log(Listings);
   return (
     <div className="container__profile" id="container-profile">
       <div className="profile__about">
@@ -140,7 +141,13 @@ const Profile = () => {
           <h2 className="title">My listing</h2>
           <div className="homes">
             {Listings.map((listing) => (
-              <Home items={listing} lists={Listings} setLists={setListings} />
+              <Home
+                items={listing}
+                lists={Listings}
+                onDelete={true}
+                onEdit={true}
+                setLists={setListings}
+              />
             ))}
           </div>
           ;

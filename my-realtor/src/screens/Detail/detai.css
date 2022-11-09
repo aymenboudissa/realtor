@@ -56,7 +56,7 @@
 }
 .realtor__icons {
   display: flex;
-  gap: 2rem;
+  justify-content: space-between;
 }
 .btn__message {
   width: 100%;

@@ -4,6 +4,7 @@ import "./categories.css";
 import { db } from "../../firebase";
 import { xtype } from "xtypejs";
 import Spinner from "../spinner/Spinner";
+import Slider from "../slider/Slider";
 import {
   collection,
   getDocs,
@@ -13,21 +14,25 @@ import {
   where,
 } from "firebase/firestore";
 const Categories = () => {
-  const [offers, setOffers] = React.useState([]);
-  const [rents, setRents] = React.useState([]);
-  const [sales, setSale] = React.useState([]);
+  const [offers, setOffers] = React.useState(null);
+  const [rents, setRents] = React.useState(null);
+  const [sales, setSale] = React.useState(null);
+  const [lists, setList] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function fetchListings(parametre, value, state) {
+    setLoading(true);
+    async function fetchListings(parametre, value, state, slider) {
       const listingRef = collection(db, "listings");
-
-      const q = query(
-        listingRef,
-        where(parametre, "==", value),
-        orderBy("timestamp", "desc"),
-        limit(4)
-      );
+      let q;
+      !slider
+        ? (q = query(
+            listingRef,
+            where(parametre, "==", value),
+            orderBy("timestamp", "desc"),
+            limit(4)
+          ))
+        : (q = query(listingRef, orderBy("timestamp", "desc"), limit(5)));
       const querySnap = await getDocs(q);
       let listings = [];
       querySnap.forEach((doc) => {
@@ -42,41 +47,47 @@ const Categories = () => {
     fetchListings("offer", true, setOffers);
     fetchListings("type", "sell", setSale);
     fetchListings("type", "rent", setRents);
+    fetchListings("", "", setList, true);
     setLoading(false);
   }, []);
+  if (loading) {
+    return <Spinner />;
+  }
+
   return (
-    <div className="container__categories">
-      {loading ? (
-        <Spinner />
+    <>
+      {offers && sales && rents ? (
+        <div>
+          <Slider images={lists} list={true} />
+
+          <div className="container__categories">
+            <>
+              <Category
+                key={1}
+                title={"Recent offers"}
+                link={"/offers"}
+                values={offers}
+              />
+
+              <Category
+                key={2}
+                title={"Places for sale"}
+                link={"/category/sale"}
+                values={sales}
+              />
+              <Category
+                key={3}
+                title={"Places for rent"}
+                link={"/category/rent"}
+                values={rents}
+              />
+            </>
+          </div>
+        </div>
       ) : (
-        <>
-          {offers.length > 0 && (
-            <Category
-              key={1}
-              title={"Recent offers"}
-              link={"/offers"}
-              values={offers}
-            />
-          )}
-          {sales.length > 0 && (
-            <Category
-              key={2}
-              title={"Places for sale"}
-              link={"/category/sale"}
-              values={sales}
-            />
-          )}
-          {rents.length > 0 && (
-            <Category
-              key={3}
-              title={"Places for rent"}
-              link={"/category/rent"}
-              values={rents}
-            />
-          )}
-        </>
+        <Spinner />
       )}
-    </div>
+    </>
   );
 };
 

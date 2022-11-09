@@ -10,6 +10,7 @@ import Profile from "./screens/profie/Profile";
 import PrivateRoute from "./components/PrivateRoute";
 import ForgotPassword from "./screens/Sign-in/ForgotPassword";
 import CreateList from "./screens/Create-listing/CreateList";
+import UpdateList from "./screens/UpdateList";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -30,6 +31,9 @@ const App = () => {
         </Route>
         <Route path="/create-listing" element={<PrivateRoute />}>
           <Route path="/create-listing" element={<CreateList />} />
+        </Route>
+        <Route path="/edite-listing/:id" element={<PrivateRoute />}>
+          <Route path="/edite-listing/:id" element={<UpdateList />} />
         </Route>
       </Routes>
       <ToastContainer
